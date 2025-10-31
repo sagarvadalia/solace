@@ -7,13 +7,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 Install dependencies
 
 ```bash
-npm i
+pnpm install
 ```
 
 Run the development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ## Database set up
@@ -31,7 +31,7 @@ docker compose up -d
 3. Push migration to the database
 
 ```bash
-npx drizzle-kit push
+pnpm drizzle-kit push
 ```
 
 4. Seed the database
