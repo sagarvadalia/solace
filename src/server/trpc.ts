@@ -1,16 +1,16 @@
-import 'server-only';
+import "server-only";
 
-import { initTRPC } from '@trpc/server';
-import { cache } from 'react';
+import { initTRPC } from "@trpc/server";
 
-export const createTRPCContext = cache(async () => {
+export const createTRPCContext = async () => {
   // Define your context here
   return {};
-});
+};
 
-const t = initTRPC.context<Awaited<ReturnType<ReturnType<typeof createTRPCContext>>>>().create();
+const t = initTRPC
+  .context<Awaited<ReturnType<typeof createTRPCContext>>>()
+  .create();
 
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
-

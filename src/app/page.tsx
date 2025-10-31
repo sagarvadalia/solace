@@ -1,46 +1,57 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { trpc } from "@/trpc/react";
 
 export default function Home() {
   const advocatesQuery = trpc.advocates.useQuery();
-  const advocates = advocatesQuery.data ?? [];
+  const advocates = useMemo(
+    () => advocatesQuery.data ?? [],
+    [advocatesQuery.data]
+  );
   type Advocate = NonNullable<typeof advocatesQuery.data>[number];
-  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
 
-  // Update filtered advocates when data loads
-  useEffect(() => {
-    if (advocates.length > 0) {
-      setFilteredAdvocates(advocates);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Compute filtered advocates based on search term
+  const filteredAdvocates = useMemo(() => {
+    if (!searchTerm) {
+      return advocates;
     }
-  }, [advocates]);
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return advocates.filter((advocate: Advocate) => {
+      return (
+        advocate.firstName.toLowerCase().includes(lowerSearchTerm) ||
+        advocate.lastName.toLowerCase().includes(lowerSearchTerm) ||
+        advocate.city.toLowerCase().includes(lowerSearchTerm) ||
+        advocate.degree.toLowerCase().includes(lowerSearchTerm) ||
+        advocate.specialties.some((s) =>
+          s.toLowerCase().includes(lowerSearchTerm)
+        ) ||
+        advocate.yearsOfExperience.toString().includes(lowerSearchTerm)
+      );
+    });
+  }, [advocates, searchTerm]);
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchTerm = e.target.value.toLowerCase();
+    const newSearchTerm = e.target.value;
+    setSearchTerm(newSearchTerm);
 
     const searchTermElement = document.getElementById("search-term");
     if (searchTermElement) {
-      searchTermElement.innerHTML = searchTerm;
+      searchTermElement.innerHTML = newSearchTerm.toLowerCase();
     }
 
     console.log("filtering advocates...");
-    const filteredAdvocates = advocates.filter((advocate: Advocate) => {
-      return (
-        advocate.firstName.includes(searchTerm) ||
-        advocate.lastName.includes(searchTerm) ||
-        advocate.city.includes(searchTerm) ||
-        advocate.degree.includes(searchTerm) ||
-        advocate.specialties.some((s) => s.includes(searchTerm)) ||
-        advocate.yearsOfExperience.toString().includes(searchTerm)
-      );
-    });
-
-    setFilteredAdvocates(filteredAdvocates);
   };
 
   const onClick = () => {
     console.log(advocates);
-    setFilteredAdvocates(advocates);
+    setSearchTerm("");
+    const searchTermElement = document.getElementById("search-term");
+    if (searchTermElement) {
+      searchTermElement.innerHTML = "";
+    }
   };
 
   return (
@@ -52,7 +63,11 @@ export default function Home() {
         <p>
           Searching for: <span id="search-term"></span>
         </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
+        <input
+          style={{ border: "1px solid black" }}
+          onChange={onChange}
+          value={searchTerm}
+        />
         <button onClick={onClick}>Reset Search</button>
       </div>
       <br />

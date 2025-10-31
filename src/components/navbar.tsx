@@ -7,26 +7,26 @@ import { Button } from "@/components/ui/button";
 export function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
 
-  // Always render the button to avoid layout shift
-  // resolvedTheme is undefined during SSR, available after hydration
-  const isDark = resolvedTheme === "dark";
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <div className="container flex h-14 items-center justify-between">
-        <div className="mx-4 flex">
-          <h1 className="text-xl font-bold">Solace Advocates</h1>
-        </div>
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur">
+      <div className="container flex h-14 items-center justify-between px-4">
+        <h1 className="text-xl font-bold">Solace Advocates</h1>
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setTheme(isDark ? "light" : "dark")}
+          onClick={toggleTheme}
           aria-label="Toggle theme"
-          className="relative"
           disabled={resolvedTheme === undefined}
         >
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          {resolvedTheme === "dark" ? (
+            <Sun className="h-5 w-5" />
+          ) : (
+            <Moon className="h-5 w-5" />
+          )}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </div>

@@ -1,6 +1,4 @@
-'use client';
-
-import { useEffect, useState } from 'react';
+"use client";
 
 /**
  * Hook to detect if component has mounted on the client.
@@ -8,12 +6,5 @@ import { useEffect, useState } from 'react';
  * Useful for components that need to avoid hydration mismatches.
  */
 export function useMounted(): boolean {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  return mounted;
+  return typeof window !== "undefined";
 }
-
