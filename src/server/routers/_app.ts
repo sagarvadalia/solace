@@ -2,7 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 import { baseProcedure, createTRPCRouter } from "../trpc";
-import { advocateData } from "@/db/seed/advocates";
+import db from "@/db";
+import { advocates } from "@/db/schema";
 
 export const appRouter = createTRPCRouter({
   greeting: baseProcedure
@@ -16,8 +17,8 @@ export const appRouter = createTRPCRouter({
         greeting: `Hello ${opts.input.text}`,
       };
     }),
-  advocates: baseProcedure.query(() => {
-    return advocateData;
+  advocates: baseProcedure.query(async () => {
+    return await db.select().from(advocates);
   }),
 });
 
